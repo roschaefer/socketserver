@@ -14,7 +14,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js --client ../client/dist",
+    "deploy": "scp -r server.js package.json 'pi@192.168.178.52:~/StoryTrolley/server' && ssh pi@192.168.178.52 'bash -s' < deploy.sh"
   },
   "repository": {
     "type": "git",
