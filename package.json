@@ -1,10 +1,13 @@
 {
-  "name": "socketserver",
+  "name": "trolley-server",
   "version": "1.0.0",
   "description": "Socket Server for StoryTrolley",
   "main": "server.js",
   "dependencies": {
+    "finalhandler": "^1.0.4",
+    "minimist": "^1.2.0",
     "serialport": "^5.0.0",
+    "serve-static": "^1.12.4",
     "socket.io": "^2.0.3",
     "websockets": "^0.2.0"
   },
@@ -15,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roschaefer/socketserver.git"
+    "url": "git+https://github.com/roschaefer/trolley-server.git"
   },
   "author": "Robert Schäfer and Jannis Konrad",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/roschaefer/socketserver/issues"
+    "url": "https://github.com/roschaefer/trolley-server/issues"
   },
-  "homepage": "https://github.com/roschaefer/socketserver#readme"
+  "homepage": "https://github.com/roschaefer/trolley-server#readme"
 }
