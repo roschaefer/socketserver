@@ -1,0 +1,26 @@
+{
+  "name": "socketserver",
+  "version": "1.0.0",
+  "description": "Socket Server for StoryTrolley",
+  "main": "server.js",
+  "dependencies": {
+    "serialport": "^5.0.0",
+    "socket.io": "^2.0.3",
+    "websockets": "^0.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roschaefer/socketserver.git"
+  },
+  "author": "Robert Schäfer and Jannis Konrad",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roschaefer/socketserver/issues"
+  },
+  "homepage": "https://github.com/roschaefer/socketserver#readme"
+}
