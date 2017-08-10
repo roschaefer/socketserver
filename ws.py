@@ -79,6 +79,36 @@ class SimpleEcho(WebSocket):
                 "state": True
                 }
             }));
+            
+        #Init Status
+        self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "regional", 
+                "state": not regio.value
+                }
+            }));
+        self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "organic", 
+                "state": not bio.value
+                }
+            }));
+        self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "sugar", 
+                "state": not sugar.value
+                }
+            }));
+        self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "price", 
+                "state": not price.value
+                }
+            }));
         print('Success')
 
     def handleClose(self):
@@ -95,12 +125,19 @@ while True:
         print(rawdata)
         data = binascii.unhexlify(rawdata)
         if data[0] ^ data[1] ^ data[2] ^ data[3] ^ data[4] ^ data[5] == 0:
-            data = int(rawdata[:-2], 16)
+            # data = int(rawdata[:-2], 16) #Without CRC
+            data = int(rawdata[:], 16) #With CRC
             for con in server.connections.values():
                 con.sendMessage(json.dumps({
                     "type": "rfidRead", 
                     "params": {
-                        "id": data
+                        "id": rawdata.decode("utf-8")
+                        }
+                    }))
+            print(json.dumps({
+                    "type": "rfidRead", 
+                    "params": {
+                        "id": rawdata.decode("utf-8")
                         }
                     }))
         else:
