@@ -129,8 +129,9 @@ while True:
             # data = int(rawdata[:-2], 16) #Without CRC
             data = int(rawdata[:], 16) #With CRC
             
-            if data == 83565886040293:
+            if rawdata == b"4C00B2F3E8E5" or rawdata == b"4C00B2F47F75":
                 Popen(["killall", "chromium-browser"])
+                print("Reset")
                 Popen(["chromium-browser", 'http://localhost:8000/', "--start-fullscreen"], env={"DISPLAY": ":0"})
             elif len(server.connections):
                 for con in server.connections.values():
