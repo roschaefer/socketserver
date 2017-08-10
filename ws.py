@@ -3,14 +3,15 @@ from gpiozero import Button
 from signal import pause
 import json
 import serial
+import binascii
 
 green = Button(3)
 red   = Button(2)
-bio = Button(4)
-regio = Button(5)
-foo   = Button(6)
-bar   = Button(7)
-#s = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout=0.1)
+regio = Button(4)
+bio   = Button(5)
+sugar = Button(6)
+price = Button(7)
+s = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout=0.1)
 
 class SimpleEcho(WebSocket):
     def handleMessage(self):
@@ -21,41 +22,62 @@ class SimpleEcho(WebSocket):
         print(self.address, 'connected', end=" ")
         green.when_pressed = lambda: self.sendMessage(json.dumps({"type": "rightButtonClick"}))
         red.when_pressed   = lambda: self.sendMessage(json.dumps({"type": "leftButtonClick"}))
-        bio.when_pressed   = lambda: self.sendMessage(json.dumps({
+        regio.when_pressed = lambda: self.sendMessage(json.dumps({
             "type": "prioritySwitch", 
             "params": {
-                "priority": "bio", 
+                "priority": "regional", 
                 "state": True
                 }
             }))
-        bio.when_released   = lambda: self.sendMessage(json.dumps({
+        regio.when_released = lambda: self.sendMessage(json.dumps({
             "type": "prioritySwitch", 
             "params": {
-                "priority": "bio", 
+                "priority": "regional", 
                 "state": False
                 }
             }));
-        regio.when_pressed   = lambda: self.sendMessage(json.dumps({
+        bio.when_pressed = lambda: self.sendMessage(json.dumps({
             "type": "prioritySwitch", 
             "params": {
-                "priority": "regio", 
+                "priority": "organic", 
                 "state": True
                 }
             }))
-        foo.when_pressed   = lambda: self.sendMessage(json.dumps({
+        bio.when_released = lambda: self.sendMessage(json.dumps({
             "type": "prioritySwitch", 
             "params": {
-                "priority": "foo", 
+                "priority": "organic", 
+                "state": False
+                }
+            }));
+        sugar.when_pressed = lambda: self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "sugar", 
                 "state": True
                 }
             }))
-        bar.when_pressed   = lambda: self.sendMessage(json.dumps({
+        sugar.when_released = lambda: self.sendMessage(json.dumps({
             "type": "prioritySwitch", 
             "params": {
-                "priority": "bar", 
+                "priority": "sugar", 
+                "state": False
+                }
+            }));
+        price.when_pressed = lambda: self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "price", 
                 "state": True
                 }
             }))
+        price.when_released = lambda: self.sendMessage(json.dumps({
+            "type": "prioritySwitch", 
+            "params": {
+                "priority": "price", 
+                "state": False
+                }
+            }));
         print('Success')
 
     def handleClose(self):
@@ -67,13 +89,20 @@ print("Init Done")
 
 while True:
     server.serveonce()
-#    if s.inWaiting():
-#        server.sendMessage(json.dumps({
-#            "type": "rfidRead", 
-#            "params": {
-#                "id": int(s.readall()[1:-3], 16)
-#                }
-#            }))
+    if len(server.connections) and s.inWaiting():
+        rawdata = s.readall()[1:-3]
+        data = binascii.unhexlify(rawdata)
+        if data[0] ^ data[1] ^ data[2] ^ data[3] ^ data[4] ^ data[5] == 0:
+            data = int(rawdata[:-2], 16)
+            for con in server.connections.values():
+                con.sendMessage(json.dumps({
+                    "type": "rfidRead", 
+                    "params": {
+                        "id": data
+                        }
+                    }))
+        else:
+            print("Bad Tag")
 
 #{"type": "rfidRead", "params": {"id": %i}}
 #{"type": "rightButtonClick"}
