@@ -14,9 +14,6 @@ if (!argv.client) {
   process.exit();
 }
 
-
-
-
 let serve = serveStatic(argv.client);
 
 let server = http.createServer(function(req, res) {
@@ -39,7 +36,6 @@ let port = new SerialPort('/dev/ttyUSB0', {
   baudRate: 115200
 });
 
-
 port.on('data', function (data) {
   let id = data.toString();
   console.log('Data:', id);
@@ -51,3 +47,15 @@ port.on('readable', function () {
   console.log('Readable:', port.read());
 });
 
+//Buttons
+var wpi = require('wiring-pi');
+
+wpi.wiringPiSetupGpio()
+
+for(let i=2; i<8; i++) {
+    wpi.pinMode(i, wpi.INPUT);
+    wpi.pullUpDnControl(i, PUD_UP)
+    wpi.wiringPiISR(i, wpi.INT_EDGE_FALLING, function(delta) {
+        console.log('Pin ', i, ' LOW (', delta, ')');
+    });
+}
