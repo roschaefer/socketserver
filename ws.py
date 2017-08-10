@@ -4,6 +4,7 @@ from signal import pause
 import json
 import serial
 import binascii
+from subprocess import Popen
 
 green = Button(3)
 red   = Button(2)
@@ -120,26 +121,31 @@ print("Init Done")
 
 while True:
     server.serveonce()
-    if len(server.connections) and s.inWaiting():
+    if s.inWaiting():
         rawdata = s.readall()[1:-3]
         print(rawdata)
         data = binascii.unhexlify(rawdata)
         if data[0] ^ data[1] ^ data[2] ^ data[3] ^ data[4] ^ data[5] == 0:
             # data = int(rawdata[:-2], 16) #Without CRC
             data = int(rawdata[:], 16) #With CRC
-            for con in server.connections.values():
-                con.sendMessage(json.dumps({
-                    "type": "rfidRead", 
-                    "params": {
-                        "id": rawdata.decode("utf-8")
-                        }
-                    }))
-            print(json.dumps({
-                    "type": "rfidRead", 
-                    "params": {
-                        "id": rawdata.decode("utf-8")
-                        }
-                    }))
+            
+            if data == 83565886040293:
+                Popen(["killall", "chromium-browser"])
+                Popen(["chromium-browser", 'http://localhost:8000/', "--start-fullscreen"], env={"DISPLAY": ":0"})
+            elif len(server.connections):
+                for con in server.connections.values():
+                    con.sendMessage(json.dumps({
+                        "type": "rfidRead", 
+                        "params": {
+                            "id": rawdata.decode("utf-8")
+                            }
+                        }))
+                print(json.dumps({
+                        "type": "rfidRead", 
+                        "params": {
+                            "id": rawdata.decode("utf-8")
+                            }
+                        }))
         else:
             print("Bad Tag")
 
